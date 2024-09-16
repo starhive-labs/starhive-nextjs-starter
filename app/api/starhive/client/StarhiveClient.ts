@@ -12,10 +12,9 @@ import {StreamData} from "./StreamData";
 import {Location} from "./Location";
 import {User} from "./User";
 import {WorkflowState, WorkflowTransition} from "./Workflow";
-import {StarhiveSpace} from "./StarhiveSpace";
-import {StarhiveType} from "./StarhiveType";
+import {StarhiveType} from "@/app/api/starhive/client/StarhiveType";
 import {StarhiveTypeEnriched} from "@/app/api/starhive/client/StarhiveTypeEnriched";
-
+import {StarhiveSpace} from "@/app/api/starhive/client/StarhiveSpace";
 
 type BulkRequest = {
     operations: BulkOperations[]
@@ -89,27 +88,31 @@ export class StarhiveClient {
     private readonly apiToken: string
     private readonly workspaceId: string
     private readonly client: any
-    private readonly _decoders: Map<string, () => JsonDecoder<any>>
+    readonly decoders: Map<string, () => JsonDecoder<any>>
 
     constructor(apiToken: string, workspaceId: string,
                 decoders: Map<string, () => JsonDecoder<any>>, baseUrl: string = "https://api.starhive.com/public/v1") {
         this.apiToken = apiToken
         this.workspaceId = workspaceId
         this.baseUrl = baseUrl
-        this._decoders = decoders
+        this.decoders = decoders
         this.client = axios.create({
             baseURL: this.baseUrl,
         })
     }
 
-    get decoders(): Map<string, () => JsonDecoder<any>> {
-        return this._decoders;
-    }
-
+    /**
+     * Retrieves a single object based on the object id.
+     * @example
+     *import { Newspaper } from "./starhive/schema/Newspaper"
+     *const getNewspaper = async ({ objectId }: { objectId: string }) => await client.getObject(objectId, Newspaper.TYPE_ID)
+     *
+     *const myNewspaperObject = await getNewspaper('d2d61f41-800d-4354-99e8-808d9a45d20f')
+     */
     async getObject<T extends StarhiveObject>(id: string, typeId: string): Promise<T> {
         const config = this.getRequestConfig();
         const response: AxiosResponse = await this.client.get(`/object/${id}`, config)
-        const decoder = this._decoders.get(typeId)!!();
+        const decoder = this.decoders.get(typeId)!!();
         return this.parseJsonObject(response.data, decoder)
     }
 
@@ -126,96 +129,79 @@ export class StarhiveClient {
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitDateAttribute(attributeId: string, values: Date[] | undefined): void {
+            }, visitDateAttribute(attributeId: string, values: Date[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
-                    values: values.map(v => new Intl.DateTimeFormat('se', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    }).formatToParts(v).map(p => p.value).join(''))
+                    values: values.map(v => new Intl.DateTimeFormat('se', { year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(v).map(p => p.value).join(''))
                 })
-            },
-            visitDatetimeAttribute(attributeId: string, values: Date[] | undefined): void {
+            }, visitDatetimeAttribute(attributeId: string, values: Date[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toISOString())
                 })
-            },
-            visitDecimalAttribute(attributeId: string, values: number[] | undefined): void {
+            }, visitDecimalAttribute(attributeId: string, values: number[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitIntegerAttribute(attributeId: string, values: number[] | undefined): void {
+            }, visitIntegerAttribute(attributeId: string, values: number[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitOptionAttribute(attributeId: string, values: OptionValue[] | undefined): void {
+            }, visitOptionAttribute(attributeId: string, values: OptionValue[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.getValue())
                 })
-            },
-            visitTextAttribute(attributeId: string, values: string[] | undefined): void {
+            }, visitTextAttribute(attributeId: string, values: string[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitURLAttribute(attributeId: string, values: URL[] | undefined): void {
+            }, visitURLAttribute(attributeId: string, values: URL[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitReferenceAttribute(attributeId: string, values: string[] | undefined): void {
+            }, visitReferenceAttribute(attributeId: string, values: string[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitLocationAttribute(attributeId: string, values: Location[] | undefined): void {
+            }, visitLocationAttribute(attributeId: string, values: Location[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => JSON.stringify(v))
                 })
-            },
-            visitIpAddressAttribute(attributeId: string, values: string[] | undefined): void {
+            }, visitIpAddressAttribute(attributeId: string, values: string[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitEmailAttribute(attributeId: string, values: string[] | undefined): void {
+            }, visitEmailAttribute(attributeId: string, values: string[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.toString())
                 })
-            },
-            visitUserAttribute(attributeId: string, values: User[] | undefined): void {
+            }, visitUserAttribute(attributeId: string, values: User[] | undefined): void {
                 if (values == undefined) return
                 attributes.push({
                     attributeId: attributeId,
                     values: values.map(v => v.id)
                 })
-            },
-            visitWorkflowAttribute(attributeId: string, value: WorkflowState | undefined, transition: WorkflowTransition | undefined): void {
+            }, visitWorkflowAttribute(attributeId: string, value: WorkflowState | undefined, transition: WorkflowTransition | undefined): void {
                 if (value == undefined && transition == undefined) return
                 if (value) {
                     attributes.push({
@@ -237,13 +223,24 @@ export class StarhiveClient {
         return objectData
     }
 
+    /**
+     * Create a Starhive Object
+     * @example
+     *import { Shoes } from "./starhive/schema/Shoes"
+     *type Size = 'XL' | 'L' | 'M' | 'S'
+     *type color = 'white' | 'black'
+     *const createShoe = async ({ size, color }: { size: Size, color: Color }) => await client.createObject(
+     *    Shoes.builder().size(size).color(color).build()
+     *  )
+     *createShoe({ size: 'XL', color: 'white' })
+     */
     async createObject<T extends StarhiveObject>(object: T): Promise<T> {
         try {
             const objectData = this.createRequestObject(object)
             objectData['typeId'] = object.getTypeId()
             const config = this.getRequestConfig();
             const response: AxiosResponse = await this.client.post(`/object`, objectData, config)
-            const decoder = this._decoders.get(object.getTypeId())!!
+            const decoder = this.decoders.get(object.getTypeId())!!
             return this.parseJsonObject(response.data, decoder())
         } catch (err) {
             console.log(err)
@@ -251,15 +248,28 @@ export class StarhiveClient {
         }
     }
 
+    /**
+     * Update an object within Starhive.
+     *
+     * The method will remove values (except of type workflow) that are not provided in the argument.
+     * In other words if the intention is to only update a single attribute do load the object prior to updating it.
+     * @example
+     *import { Shoes } from "./starhive/schema/Shoes"
+     *type color = 'white' | 'black'
+     *const changeColor = async ({ color }: { color: Color }) => await client.patchObject(
+     *    Shoes.builder().color(color).build()
+     *  )
+     *changeColor({ color: 'white' })
+     */
     async updateObject<T extends StarhiveObject>(object: T): Promise<T> {
         if (!object.getId()) {
-            throw new Error('Object id is missing')
+            throw new Error("Object id is missing")
         }
         try {
             const objectData = this.createRequestObject(object)
             const config = this.getRequestConfig();
             const response: AxiosResponse = await this.client.patch(`/object/${object.getId()}`, objectData, config)
-            const decoder = this._decoders.get(object.getTypeId())!!
+            const decoder = this.decoders.get(object.getTypeId())!!
             return this.parseJsonObject(response.data, decoder())
         } catch (err) {
             console.log(err)
@@ -267,6 +277,11 @@ export class StarhiveClient {
         }
     }
 
+    /**
+     * Creates or updates objects in bulk.
+     *
+     * If an object has an assigned id it will be treated as an update and if id is null the object will be treated as an object to be created.
+     */
     async createOrUpdateObjectsInBulk<T extends StarhiveObject>(objects: T[]): Promise<BulkResponse> {
         const bulkOperations: (UpdateBulkOperation | CreateBulkOperation)[] = objects.map((object) => {
             const objectId = object.getId()
@@ -291,6 +306,11 @@ export class StarhiveClient {
         return this.bulkRequest(request)
     }
 
+    /**
+     * Delete objects in bulk.
+     *
+     * This uses the Starhive public bulk API that has a limitation of how many objects can be deleted at the same time. Currently that limitation is 80.
+     */
     async deleteObjectsInBulk(objectIds: string[]): Promise<BulkResponse> {
         const deleteOperations: DeleteBulkOperation[] = objectIds.map((id) => ({
             'objectOperationType': 'delete',
@@ -315,6 +335,17 @@ export class StarhiveClient {
         }
     }
 
+    /**
+     * Search for objects of a given Starhive Type with the default pagination parameters.
+     *
+     * With this method you can search Objects of a specific Type using a {@link https://help.starhive.com/space/DOC/6094851/Filtering+by+StarQL | starQL} query.
+     * @example
+     * import { Shoes } from "./starhive/schema/Shoes"
+     * const getShoes = async (starQL: string) => {
+     *   return await client.search(Shoes.TYPE_ID, starQL)
+     * }
+     * const result = getShoes('Name = Zoom')
+     */
     async search<T extends StarhiveObject>(typeId: string, query: string, offset: number = 0, limit: number = 50): Promise<StarhivePage<T>> {
         const config = this.getRequestConfig();
         const response: AxiosResponse = await this.client.get(`/search?typeId=${typeId}&offset=${offset}&limit=${limit}&query=${encodeURIComponent(query)}`, config)
@@ -322,7 +353,7 @@ export class StarhiveClient {
         const pageSize = parseInt(response.data.pageSize)
         const isLast = JSON.parse(response.data.isLast)
         const objects = response.data.result.map((jsonObject: any) => {
-            const decoder = this._decoders.get(jsonObject.typeId)!!();
+            const decoder = this.decoders.get(jsonObject.typeId)!!();
             return this.parseJsonObject(jsonObject, decoder)
         });
         return new StarhivePage<T>(total, pageSize, isLast, objects)
@@ -341,7 +372,7 @@ export class StarhiveClient {
     private async uploadData(uploadUrl: PresignedUrl, contentMetadata: ContentMetadata, data: Uint8Array | ArrayBuffer) {
         const response: AxiosResponse = await this.client.put(uploadUrl.presignedUrl, data, {
             headers: {
-                'Content-Disposition': `attachment; filename=${contentMetadata.fileName}`,
+                'Content-Disposition': `attachment; filename=${encodeURIComponent(contentMetadata.fileName)}`,
                 'Content-Length': contentMetadata.fileSizeInBytes,
                 'Content-Type': contentMetadata.httpContentType,
             } as RawAxiosRequestHeaders,
@@ -357,6 +388,21 @@ export class StarhiveClient {
         return decoder.build() as T
     }
 
+    /**
+     * Upload media data from memory to Starhive in order to be able to use it as an attribute value.
+     * @example
+     * const media =
+     Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg"...</svg>`, 'utf8')
+     * const contentType = 'image/svg+xml'
+     *
+     * const newProduct = Product
+     *   .builder()
+     *   .name('My product')
+     *   .date(new Date())
+     *   .brand("My Brand")
+     *   .addMediaData(await client.uploadInMemoryStreamData('article', media.length, contentType, media))
+     *   .build()
+     */
     async uploadInMemoryStreamData(name: string, size: number, contentType: string, data: Uint8Array | ArrayBuffer): Promise<StreamData> {
         let metadata = new ContentMetadata(name, size, contentType);
         let uploadUrl = await this.getUploadUrl(metadata);
@@ -366,6 +412,21 @@ export class StarhiveClient {
         }
     }
 
+
+    /**
+     * Upload media data from a file to Starhive in order to be able to use it as an attribute value.
+     * @example
+     * const media = new File([fs.readFileSync("./myfile.jpg")], "myfile.jpg")
+     * const contentType = 'image/jpeg'
+     *
+     * const newProduct = Product
+     *   .builder()
+     *   .name('My product')
+     *   .date(new Date())
+     *   .brand("My Brand")
+     *   .addMediaData(await client.uploadFileStreamData(file, contentType))
+     *   .build()
+     */
     async uploadFileStreamData(file: File, contentType: string): Promise<StreamData> {
         const data = await file.arrayBuffer()
         let metadata = new ContentMetadata(file.name, file.size, contentType);
