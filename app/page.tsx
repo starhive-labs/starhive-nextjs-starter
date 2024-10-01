@@ -37,7 +37,7 @@ export default async function Home() {
                         className="relative"
                     />
                 </Link>
-                <h1 className="title">Build internal apps
+                <h1 className="title">Build business apps
                     for <em>any</em> purpose in hours, not weeks</h1>
                 <div className="text-2xl md:text-3xl pt-8 font-semibold text-blue-600">
                 Starhive + Next.js starter
