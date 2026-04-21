@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import {createClient, starhiveApiToken, starhiveWorkspaceId} from "@/app/api/ClientFactory";
 import {OnboardingStep} from "@/app/components/OnboardingStep";
+import {ZoomableImage} from "@/app/components/ZoomableImage";
 import {StarhivePage} from "@/app/api/starhive/client/StarhivePage";
 import {StarhiveTypeEnriched} from "@/app/api/starhive/client/StarhiveTypeEnriched";
 import CodeBlock from "@/app/components/CodeBlock";
@@ -55,11 +56,11 @@ export default async function Home() {
                         <div className="paragraph">Sign up and create a workspace on <Link
                             href="https://app.starhive.com" className="hover:underline text-blue-600">Starhive</Link>
                         </div>
-                        <div className="flex flex-row flex-wrap justify-center">
-                            <Image src="/create_acc.png" alt="Create Account" width={500} height={20}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
-                            <Image src="/account_done.png" alt="Account Created" width={700} height={20}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
+                        <div className="flex flex-row flex-wrap justify-center items-end">
+                            <ZoomableImage src="/create_acc.png" alt="Create Account" width={521} height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
+                            <ZoomableImage src="/account_done.png" alt="Account Created" width={518} height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
                         </div>
 
                         <div className="paragraph">
@@ -76,11 +77,11 @@ export default async function Home() {
                             Navigate to the workspace settings page. Select Personal access token tab in the menu and
                             create a new token.
                         </div>
-                        <div className="flex flex-row flex-wrap justify-center">
-                            <Image src="/navigate_settings.png" alt="Workspace settings" width={600} height={200}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
-                            <Image src="/create_token.png" alt="Create token" width={600} height={20}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
+                        <div className="flex flex-row flex-wrap justify-center items-end">
+                            <ZoomableImage src="/navigate_settings.png" alt="Workspace settings" width={418} height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
+                            <ZoomableImage src="/create_token.png" alt="Create token" width={407} height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
                         </div>
                         <div className="paragraph">
                             Copy your generated api token. Note that this is the only time you can see the token, after
@@ -99,8 +100,8 @@ export default async function Home() {
                             href="https://app.starhive.com" className="hover:underline text-blue-600">Starhive</Link>
                         </div>
                         <div className="flex flex-row flex-wrap justify-center">
-                            <Image src="/create_types.png" alt="Create Spaces and Types" width={700} height={200}
-                                   className="rounded-md border-gray-300 border-2"/>
+                            <ZoomableImage src="/create_types.png" alt="Create Spaces and Types" width={564} height={300}
+                                           className="rounded-md border-gray-300 border-2 h-[300px] w-auto"/>
                         </div>
                     </OnboardingStep>
 
@@ -109,12 +110,12 @@ export default async function Home() {
                             Navigate to API Connectors extension. Select your space and TypeScript language. Then press
                             generate button.
                         </div>
-                        <div className="flex flex-row flex-wrap justify-center">
-                            <Image src="/api_connectors.png" alt="Navigate to API Connectors extension" width={700}
-                                   height={20}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
-                            <Image src="/generate_schema.png" alt="Generate Schema" width={700} height={20}
-                                   className="rounded-md mx-3 border-gray-300 border-2"/>
+                        <div className="flex flex-row flex-wrap justify-center items-end">
+                            <ZoomableImage src="/api_connectors.png" alt="Navigate to API Connectors extension" width={548}
+                                           height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
+                            <ZoomableImage src="/generate_schema.png" alt="Generate Schema" width={548} height={300}
+                                           className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
                         </div>
 
 
@@ -127,8 +128,8 @@ export default async function Home() {
                             catalog in this project
                         </div>
 
-                        <Image src="/file_tree.png" alt="Generate Schema" width={200} height={20}
-                               className="rounded-md mx-3 border-gray-300 border-2"/>
+                        <ZoomableImage src="/file_tree.png" alt="Generate Schema" width={200} height={300}
+                                       className="rounded-md mx-3 border-gray-300 border-2 h-[300px] w-auto"/>
 
                         <div className="paragraph">
                             Go to ClientFactory.ts and replace <span
